@@ -6,66 +6,53 @@ import { useRouter } from "next/navigation";
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const router = useRouter();
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(null); 
   const [loading, setLoading] = useState(true);
-
+  const router = useRouter();
+    
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const storedUser = localStorage.getItem("user");
   
-    if (token) {
-      fetchUserProfile(token);
-    } else {
-      setLoading(false);
+    if (typeof window !== "undefined") {
+      try {
+        
+        if (storedUser && storedUser !== "undefined") {
+          setUser(JSON.parse(storedUser));
+        }
+      } catch (error) {
+        console.error("Error parsing user:", error);
+        localStorage.removeItem("user"); // Remove invalid user data
+      }
+  
+      const token = localStorage.getItem("token");
+      if (!storedUser && token) {
+        fetchUserProfile(token);
+      } else {
+        setLoading(false);
+      }
     }
   }, []);
+  
 
-  // const fetchUserProfile = async (token) => {
-   
-  //     // const res = await fetch(`${process.env.NEXT_PUBLIC_AUTH_SERVER}/api/user`, {
-  //     //   method: "POST",
-  //     //   body: JSON.stringify({token: token})
-  //     // });
-
-  //     const myHeaders = new Headers();
-  //     myHeaders.append("Content-Type", "application/json");
-  //     myHeaders.append("Authorization", "Bearer "+token);
-
-  //     const raw = JSON.stringify({
-  //       "token": token
-  //     });
-
-  //     const requestOptions = {
-  //       method: "POST",
-  //       headers: myHeaders,
-  //       body: raw,
-  //       redirect: "follow"
-  //     };
-
-  //   await fetch("http://127.0.0.1:8000/api/user", requestOptions)
-  //     .then((response) => response.json())
-  //     .then((result) => setUser(result))
-  //     .catch((error) => console.error(error));
-  // };
   const fetchUserProfile = async (token) => {
     try {
-      const myHeaders = new Headers();
-      myHeaders.append("Content-Type", "application/json");
-      myHeaders.append("Authorization", "Bearer " + token);
-  
-      const requestOptions = {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_AUTH_SERVER}/api/user`, {
         method: "POST",
-        headers: myHeaders,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify({ token }),
-        redirect: "follow",
-      };
-  
-      const response = await fetch(`${process.env.NEXT_PUBLIC_AUTH_SERVER}/api/user`, requestOptions);
+      });
+
       const result = await response.json();
-      
-      console.log("Fetched user:", result); // Debugging
-      if (result && result.id) {
+      console.log("Fetched user:", result);
+
+      if (result?.id) {
         setUser(result);
+        if (typeof window !== "undefined") {
+          localStorage.setItem("user", JSON.stringify(result));
+        }
       } else {
         console.warn("Invalid user data:", result);
       }
@@ -75,49 +62,23 @@ export const AuthProvider = ({ children }) => {
       setLoading(false);
     }
   };
-  
-  const login = async (credentials) => {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_AUTH_SERVER}/api/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(credentials),
-    });
-    
-    const data = await res.json(); 
-    if (res.ok) {
-      localStorage.setItem("token", data.data.token.access_token);
-      setUser(data.data.user);
-      router.push("/");
-    } else {
-      throw new Error(data.message || "Login failed");
-    }
-  };
 
-  const register = async (credentials) => {
-    const res = await fetch("/api/auth/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(credentials),
-    });
-
-    const data = await res.json();
-    if (res.ok) {
-      return data.message; // Registration successful
-    } else {
-      throw new Error(data.message || "Registration failed");
-    }
-  };
-
+  // 🔹 **Logout Method**
   const logout = () => {
-    localStorage.removeItem("token");
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+    }
     setUser(null);
+    router.push("/login");
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, loading, logout , setUser}}>
       {children}
     </AuthContext.Provider>
   );
 };
 
 export const useAuth = () => useContext(AuthContext);
+

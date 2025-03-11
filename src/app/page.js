@@ -16,14 +16,17 @@ export default function Home() {
     }
   }, [user, loading, router]);
   
-  if (loading) return <p>Loading...</p>; // Show loading state before checking user
-  if (!user) return null;
-  return user.role === "admin" ? <ProductCrud /> :  (<CartProvider>
+  if (loading) return <p>Loading...</p>; 
+  if (!user) return null; console.log('user.role in Home', user.role)
+  return user.role === "admin" ? <ProductCrud /> :  
+      (
+      <CartProvider>
          <Cart />
          <div className="p-8">
            <h1 className="text-2xl font-bold mb-4">Products</h1>
            <ProductList />
          </div>
-       </CartProvider>);
+      </CartProvider>
+      );
 }
 

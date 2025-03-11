@@ -29,7 +29,7 @@ export default function Login() {
 
       if (typeof window !== "undefined") { 
         localStorage.setItem("token", data.data.token.access_token);
-        setUser(JSON.stringify(data.data))
+        setUser(data.data)
       }
       
       router.push("/");

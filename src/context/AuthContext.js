@@ -11,21 +11,10 @@ export const AuthProvider = ({ children }) => {
   const router = useRouter();
     
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-  
+    
     if (typeof window !== "undefined") {
-      try {
-        
-        if (storedUser && storedUser !== "undefined") {
-          setUser(JSON.parse(storedUser));
-        }
-      } catch (error) {
-        console.error("Error parsing user:", error);
-        localStorage.removeItem("user"); // Remove invalid user data
-      }
-  
       const token = localStorage.getItem("token");
-      if (!storedUser && token) {
+      if (token) {
         fetchUserProfile(token);
       } else {
         setLoading(false);
@@ -46,13 +35,9 @@ export const AuthProvider = ({ children }) => {
       });
 
       const result = await response.json();
-      console.log("Fetched user:", result);
-
+      
       if (result?.id) {
         setUser(result);
-        if (typeof window !== "undefined") {
-          localStorage.setItem("user", JSON.stringify(result));
-        }
       } else {
         console.warn("Invalid user data:", result);
       }
@@ -74,7 +59,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, logout , setUser}}>
+    <AuthContext.Provider value={{ user, setUser, loading, logout }}>
       {children}
     </AuthContext.Provider>
   );

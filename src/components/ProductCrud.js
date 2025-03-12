@@ -7,10 +7,9 @@ export default function ProductCrud() {
   const [editingId, setEditingId] = useState(null);
 
   // Fetch products from backend
-  useEffect(() => {
-    fetch("/api/products")
-      .then((res) => res.json())
-      .then((data) => setProducts(data));
+  useEffect( () => { 
+    fetch(`${process.env.NEXT_PUBLIC_PRODUCT_SERVER}/api/products/`).then((res) => res.json())
+    .then((data) => setProducts(data.data));
   }, []);
 
   // Handle input changes
@@ -22,31 +21,37 @@ export default function ProductCrud() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const method = editingId ? "PUT" : "POST";
-    const endpoint = editingId ? `/api/products/${editingId}` : "/api/products";
-
+    const endpoint = editingId
+      ? `${process.env.NEXT_PUBLIC_PRODUCT_SERVER}/api/products/${editingId}`
+      : `${process.env.NEXT_PUBLIC_PRODUCT_SERVER}/api/products`;
+  
     const res = await fetch(endpoint, {
       method,
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(form),
     });
-
+  
     if (res.ok) {
-      const updatedProduct = await res.json();
+      const responseData = await res.json();
+      const updatedProduct = responseData.data; // Extract the actual product object
+  
       setProducts((prev) =>
         editingId
-          ? prev.map((p) => (p.id === editingId ? updatedProduct : p))
-          : [...prev, updatedProduct]
+          ? prev.map((p) => (p.id === editingId ? updatedProduct : p)) // Replace updated product
+          : [...prev, updatedProduct] // Add new product
       );
+  
       setForm({ name: "", price: "", stock: "" });
       setEditingId(null);
     }
   };
+  
 
   // Handle product deletion
   const handleDelete = async (id) => {
     if (!confirm("Are you sure?")) return;
 
-    const res = await fetch(`/api/products/${id}`, { method: "DELETE" });
+    const res = await fetch(`${process.env.NEXT_PUBLIC_PRODUCT_SERVER}/api/products/${id}`, { method: "DELETE" });
     if (res.ok) {
       setProducts((prev) => prev.filter((p) => p.id !== id));
     }

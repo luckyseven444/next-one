@@ -7,28 +7,36 @@ const CartContext = createContext();
 export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
 
-  const addToCart = (product) => {
+  const addToCart = (product, qty) => {
     setCart((prevCart) => {
       const exists = prevCart.find((item) => item.id === product.id);
       if (exists) {
         return prevCart.map((item) =>
-          item.id === product.id ? { ...item, qty: item.qty + 1 } : item
+          item.id === product.id ? { ...item, stock: item.stock + 1, qtyAddedToCart: qty } : item
         );
       }
-      return [...prevCart, { ...product, qty: 1 }];
+      return [...prevCart, { ...product, stock: 1, qtyAddedToCart: qty }];
     });
   };
-
+  
   const removeFromCart = (productId) => {
     setCart((prevCart) =>
       prevCart
-        .map((item) => (item.id === productId ? { ...item, qty: item.qty - 1 } : item))
-        .filter((item) => item.qty > 0)
+        .map((item) =>
+          item.id === productId
+            ? { 
+                ...item, 
+                stock: item.stock - 1, 
+                qtyAddedToCart: Math.max((item.qtyAddedToCart || 0) - 1, 0) 
+              }
+            : item
+        )
+        .filter((item) => item.qtyAddedToCart > 0) 
     );
   };
-
+  
   return (
-    <CartContext.Provider value={{ cart, addToCart, removeFromCart }}>
+    <CartContext.Provider value={{ cart, setCart,addToCart, removeFromCart }}>
       {children}
     </CartContext.Provider>
   );

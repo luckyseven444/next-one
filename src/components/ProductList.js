@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useCart } from "../context/CartContext";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
@@ -80,53 +81,45 @@ const ProductList = () => {
      
   };
   
-
-  // ✅ Function to update stock after checkout is successful
-  const updateStockAfterCheckout = (checkedOutCart) => {
-    setProducts((prevProducts) =>
-      prevProducts.map((product) => {
-        const purchasedItem = checkedOutCart.find((item) => item.id === product.id);
-        return purchasedItem
-          ? { ...product, stock: product.stock - purchasedItem.qty }
-          : product;
-      })
-    );
-  };
-
   return (
-    <div className="grid grid-cols-3 gap-4">
-      {products.map((product) => {
-        const cartItem = cart.find((item) => item.id === product.id); 
-        const cartQty = cartItem ? cartItem.stock : 0;
-        const isAddDisabled = cartQty === 0;
-        const isRemoveDisabled = getValueById(product.id) == null;
-        return (
-          <div key={product.id} className="border p-4 rounded shadow">
-            <h3 className="font-bold">{product.name}</h3>
-            <p>Stock: {product.stock}</p>
-            <div className="flex gap-2 mt-2">
-              <button
-                className={`bg-red-500 text-white px-3 py-1 rounded ${
-                  isAddDisabled ? "opacity-50 cursor-not-allowed" : ""
-                }`}
-                onClick={() => handleAdd(product)}
-                disabled={product.stock === 0}
-              >
-                +
-              </button>
-              <button
-                className={`bg-red-500 text-white px-3 py-1 rounded ${
-                  isRemoveDisabled ? "opacity-50 cursor-not-allowed" : ""
-                }`}
-                onClick={() => handleRemove(product)}
-                disabled={isRemoveDisabled}
-              >
-                -
-              </button>
+    <div className="container mt-4">
+      <h2 className="text-center mb-4 fs-5">Product List</h2>
+      <div className="row">
+        {products.map((product) => {
+          const cartItem = cart.find((item) => item.id === product.id);
+          const cartQty = cartItem ? cartItem.qty : 0;
+          const isRemoveDisabled = cartQty === 0;
+
+          return (
+            <div key={product.id} className="col-md-4 mb-4">
+              <div className="card shadow-sm">
+                <div className="card-body">
+                  <h5 className="card-title">{product.name}</h5>
+                  <p className="card-text">Stock: {product.stock}</p>
+                  <p className="card-text">Price: {product.price}</p>
+                  <div className="d-flex justify-content-between">
+                    <button
+                      className="btn btn-primary"
+                      onClick={() => handleAdd(product)}
+                      disabled={product.stock === 0}
+                    >
+                      +
+                    </button>
+                    <span className="fw-bold">{cartQty}</span>
+                    <button
+                      className="btn btn-danger"
+                      onClick={() => handleRemove(product)}
+                      disabled={isRemoveDisabled}
+                    >
+                      -
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
     </div>
   );
 };

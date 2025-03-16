@@ -2,6 +2,9 @@
 import { AuthProvider, useAuth } from "../context/AuthContext";
 import Navbar from "../components/Navbar";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import 'bootstrap/dist/css/bootstrap.css';
+import BootstrapClient from '@/components/BootstrapClient.js';
 
 export default function RootLayout({ children }) {
   return (
@@ -13,16 +16,31 @@ export default function RootLayout({ children }) {
 
 function Layout({ children }) {
   const { user } = useAuth();
+  const pathname = usePathname(); // Get current route
 
   return (
     <html lang="en">
-      <body>
+      <body className="container mx-auto p-4">
+        <BootstrapClient />
         {!user ? (
           <>
-            <Link href="/login" className="mr-4">Login</Link>
-            <Link href="/register">Register</Link>
+          <div className="d-flex flex-row-reverse bd-highlight">
+            {pathname === "/login" ? (
+              <Link href="/register">Register</Link>
+            ) : pathname === "/register" ? (
+              <Link href="/login" className="mr-4">Login</Link>
+            ) : (
+              <>
+                <Link href="/login" className="mr-4">Login</Link>
+                <Link href="/register" className="px-2">Register</Link>
+              </>
+            )}
+          </div>
           </>
-        ) : <Navbar />}
+        ) : (
+          <Navbar />
+        )
+        }
         {children}
       </body>
     </html>

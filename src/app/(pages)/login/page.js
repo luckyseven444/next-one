@@ -46,29 +46,33 @@ export default function Login() {
   };
   
   return (
-    <div className="max-w-md mx-auto mt-10">
-      <h2 className="text-xl font-bold">Login</h2>
-      {error && <p className="text-red-500">{error}</p>}
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <input 
-          name="email" 
-          type="email" 
-          placeholder="Email" 
-          value={form.email}
-          onChange={handleChange} 
-          required 
-          className="input" 
-        />
-        <input 
-          name="password" 
-          type="password" 
-          placeholder="Password" 
-          value={form.password}
-          onChange={handleChange} 
-          required 
-          className="input" 
-        />
-        <button className="bg-green-500 text-white px-4 py-2 rounded" type="submit">
+    <div className="max-w-md mx-auto mt-5 p-4 border rounded shadow">
+      <h2 className="text-xl fs-5 mb-3">Login</h2>
+      {error && <p className="text-danger">{error}</p>}
+      <form onSubmit={handleSubmit}>
+        <div className="mb-3">
+          <input
+            name="email"
+            type="email"
+            placeholder="Email"
+            value={form.email}
+            onChange={handleChange}
+            required
+            className="form-control"
+          />
+        </div>
+        <div className="mb-3">
+          <input
+            name="password"
+            type="password"
+            placeholder="Password"
+            value={form.password}
+            onChange={handleChange}
+            required
+            className="form-control"
+          />
+        </div>
+        <button className="btn btn-success w-100" type="submit">
           Login
         </button>
       </form>

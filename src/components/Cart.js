@@ -3,7 +3,7 @@
 import { useCart } from "../context/CartContext";
 import { useState } from "react";
 
-const Cart = ({ updateStockAfterCheckout }) => {
+const Cart = () => {
   const { cart, setCart } = useCart();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -27,7 +27,7 @@ const Cart = ({ updateStockAfterCheckout }) => {
       const data = await response.json();
 
       if (data.success) {
-        //updateStockAfterCheckout(cart); 
+       
         setCart([...[]]);
         setMessage('Congrats! your checkout is successful')
       } else {
@@ -41,31 +41,33 @@ const Cart = ({ updateStockAfterCheckout }) => {
   };
 
   return (
-    <div className="cart-container p-4 border rounded shadow">
-      <h2 className="text-xl font-bold mb-4">Cart</h2>
+    <div
+      className="position-fixed top-0 end-0 m-3 p-3 bg-light border rounded shadow"
+      style={{ width: "300px", zIndex: 1050 }}
+    >
+      <h2 className="fw-bold mb-3 fs-5">Cart</h2>
 
       {cart.length === 0 ? (
-        <p className="text-gray-500">{ message?message:'Your cart is empty.'} </p>
+        <p className="text-muted">Your cart is empty.</p>
       ) : (
-        <ul className="mb-4">
+        <ul className="list-unstyled mb-3">
           {cart.map((item) => (
-            <li key={item.id} className="flex justify-between border-b py-2">
+            <li key={item.id} className="d-flex justify-content-between border-bottom py-2">
               <span>{item.name} (x{item.qtyAddedToCart})</span>
             </li>
           ))}
         </ul>
       )}
 
-      {/* ✅ Checkout button is always visible */}
       <button
-        className="bg-green-500 text-white px-4 py-2 rounded w-full"
+        className="btn btn-success w-100"
         onClick={handleCheckout}
+        disabled={loading}
       >
         {loading ? "Processing..." : "Checkout"}
       </button>
 
-      {/* ✅ Show validation error if the cart is empty */}
-      {error && <p className="text-red-500 mt-2">{error}</p>}
+      {error && <p className="text-danger mt-2">{error}</p>}
     </div>
   );
 };

@@ -44,22 +44,56 @@ export default function Register() {
 
       router.push("/");
     } catch (error) {
-      console.error("Register Error:", error.message);
       return { error: error.message };
     }
   };
   return (
-    <div className="max-w-md mx-auto mt-10">
-      <h2 className="text-xl font-bold">Register</h2>
-      {error && <p className="text-red-500">{error}</p>}
-     
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <input name="name" placeholder="Name" onChange={handleChange} required className="input" />
-        <input name="email" type="email" placeholder="Email" onChange={handleChange} required className="input" />
-        <input name="password" type="password" placeholder="Password" onChange={handleChange} required className="input" />
-        <input name="password_confirmation" type="password" placeholder="password_confirmation" onChange={handleChange} required className="input" />
-        
-        <button className="bg-blue-500 text-white px-4 py-2 rounded" type="submit">
+    <div className="max-w-md mx-auto mt-5 p-4 border rounded shadow">
+      <h2 className="text-xl fw-bold mb-3">Register</h2>
+      {error && <p className="text-danger">{error}</p>}
+
+      <form onSubmit={handleSubmit}>
+        <div className="mb-3">
+          <input
+            name="name"
+            placeholder="Name"
+            onChange={handleChange}
+            required
+            className="form-control"
+          />
+        </div>
+        <div className="mb-3">
+          <input
+            name="email"
+            type="email"
+            placeholder="Email"
+            onChange={handleChange}
+            required
+            className="form-control"
+          />
+        </div>
+        <div className="mb-3">
+          <input
+            name="password"
+            type="password"
+            placeholder="Password"
+            onChange={handleChange}
+            required
+            className="form-control"
+          />
+        </div>
+        <div className="mb-3">
+          <input
+            name="password_confirmation"
+            type="password"
+            placeholder="Confirm Password"
+            onChange={handleChange}
+            required
+            className="form-control"
+          />
+        </div>
+
+        <button className="btn btn-primary w-100" type="submit">
           Register
         </button>
       </form>

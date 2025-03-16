@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 export default function ProductCrud() {
   const [products, setProducts] = useState([]);
@@ -64,64 +65,61 @@ export default function ProductCrud() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Product Management</h1>
+    <div className="container mt-4">
+      <h1 className="mb-4">Product Management</h1>
 
       {/* Product Form */}
-      <form onSubmit={handleSubmit} className="mb-4 space-y-2">
-        <input
-          type="text"
-          name="name"
-          placeholder="Product Name"
-          value={form.name}
-          onChange={handleChange}
-          required
-          className="border p-2 w-full"
-        />
-        <input
-          type="number"
-          name="price"
-          placeholder="Price"
-          value={form.price}
-          onChange={handleChange}
-          required
-          className="border p-2 w-full"
-        />
-        <input
-          type="number"
-          name="stock"
-          placeholder="Stock"
-          value={form.stock}
-          onChange={handleChange}
-          required
-          className="border p-2 w-full"
-        />
-        <button type="submit" className="bg-blue-500 text-white p-2 w-full">
+      <form onSubmit={handleSubmit} className="mb-4">
+        <div className="mb-3">
+          <input
+            type="text"
+            name="name"
+            placeholder="Product Name"
+            value={form.name}
+            onChange={handleChange}
+            required
+            className="form-control"
+          />
+        </div>
+        <div className="mb-3">
+          <input
+            type="number"
+            name="price"
+            placeholder="Price"
+            value={form.price}
+            onChange={handleChange}
+            required
+            className="form-control"
+          />
+        </div>
+        <div className="mb-3">
+          <input
+            type="number"
+            name="stock"
+            placeholder="Stock"
+            value={form.stock}
+            onChange={handleChange}
+            required
+            className="form-control"
+          />
+        </div>
+        <button type="submit" className="btn btn-primary w-100">
           {editingId ? "Update Product" : "Add Product"}
         </button>
       </form>
 
       {/* Product List */}
-      <ul className="border-t pt-4">
+      <ul className="list-group">
         {products.map((product) => (
-          <li
-            key={product.id}
-            className="flex justify-between items-center p-2 border-b"
-          >
+          <li key={product.id} className="list-group-item d-flex justify-content-between align-items-center">
             <span>
               {product.name} - ${product.price} - Stock: {product.stock}
             </span>
             <div>
-              <button
-                onClick={() => handleEdit(product)}
-                className="bg-yellow-500 text-white px-2 py-1 mr-2"
-              >
+              <button onClick={() => handleEdit(product)} className="btn btn-warning btn-sm me-2">
                 Edit
               </button>
-              <button
-                onClick={() => handleDelete(product.id)}
-                className="bg-red-500 text-white px-2 py-1"
-              >
+              <button onClick={() => handleDelete(product.id)} className="btn btn-danger btn-sm">
                 Delete
               </button>
             </div>

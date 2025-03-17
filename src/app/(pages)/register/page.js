@@ -5,23 +5,15 @@ import { useAuth } from "../../../../src/context/AuthContext";
 import { useRouter } from "next/navigation";
 
 export default function Register() {
-  const {user, setUser} = useAuth();
-  const [form, setForm] = useState({ name: "", email: "", password: "" , password_confirmation: ""});
+  const { user, setUser } = useAuth();
+  const [form, setForm] = useState({ name: "", email: "", password: "", password_confirmation: "" });
   const [error, setError] = useState("");
   const router = useRouter();
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-    try {
-      await register(form);
-    } catch (err) {
-      setError(err.message);
-    }
-  };
   // 🔹 **Register Method**
   const register = async (credentials) => {
     try {
@@ -34,7 +26,8 @@ export default function Register() {
       const data = await res.json();
 
       if (!data.success) {
-        throw new Error(data.message || "Registration failed");
+        setError(data.message || "Registration failed"); // Set error message in state
+        return;
       }
 
       if (typeof window !== "undefined") {
@@ -44,9 +37,17 @@ export default function Register() {
 
       router.push("/");
     } catch (error) {
-      return { error: error.message };
+      console.error("Registration Error:", error.message);
+      setError("An unexpected error occurred. Please try again.");
     }
   };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError(""); // Clear previous errors before submit
+    await register(form);
+  };
+
   return (
     <div className="max-w-md mx-auto mt-5 p-4 border rounded shadow">
       <h2 className="text-xl fw-bold mb-3">Register</h2>
@@ -57,6 +58,7 @@ export default function Register() {
           <input
             name="name"
             placeholder="Name"
+            value={form.name}
             onChange={handleChange}
             required
             className="form-control"
@@ -67,6 +69,7 @@ export default function Register() {
             name="email"
             type="email"
             placeholder="Email"
+            value={form.email}
             onChange={handleChange}
             required
             className="form-control"
@@ -77,6 +80,7 @@ export default function Register() {
             name="password"
             type="password"
             placeholder="Password"
+            value={form.password}
             onChange={handleChange}
             required
             className="form-control"
@@ -87,6 +91,7 @@ export default function Register() {
             name="password_confirmation"
             type="password"
             placeholder="Confirm Password"
+            value={form.password_confirmation}
             onChange={handleChange}
             required
             className="form-control"

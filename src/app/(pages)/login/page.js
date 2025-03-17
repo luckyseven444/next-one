@@ -2,13 +2,14 @@
 import { useAuth } from "../../../../src/context/AuthContext";
 import { useState } from "react";
 import { useRouter } from "next/navigation"; 
+
 export default function Login() {
-  const {user, setUser} = useAuth();
+  const { user, setUser } = useAuth();
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const router = useRouter();
-    
-  const handleChange = (e) => { 
+
+  const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
@@ -24,27 +25,28 @@ export default function Login() {
       const data = await res.json();
 
       if (!data.success) {
-        throw new Error(data.message || "Login failed");
+        setError(data.message || "Login failed"); // ✅ Set error message in state
+        return;
       }
 
       if (typeof window !== "undefined") { 
         localStorage.setItem("token", data.data.token.access_token);
-        setUser(data.data)
+        setUser(data.data);
       }
-      
+
       router.push("/");
     } catch (error) {
       console.error("Login Error:", error.message);
-      return { error: error.message };
+      setError("An unexpected error occurred. Please try again.");
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
+    setError(""); // Clear previous errors before submitting
     await login(form);
   };
-  
+
   return (
     <div className="max-w-md mx-auto mt-5 p-4 border rounded shadow">
       <h2 className="text-xl fs-5 mb-3">Login</h2>
@@ -79,4 +81,3 @@ export default function Login() {
     </div>
   );
 }
-
